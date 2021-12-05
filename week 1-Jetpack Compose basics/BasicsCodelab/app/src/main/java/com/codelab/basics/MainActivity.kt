@@ -22,21 +22,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -65,8 +56,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
-private fun MyApp() {
+fun MyApp() {
+
     var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
 
     if (shouldShowOnboarding) {
@@ -77,7 +70,8 @@ private fun MyApp() {
 }
 
 @Composable
-private fun OnboardingScreen(onContinueClicked: () -> Unit) {
+fun OnboardingScreen(onContinueClicked: () -> Unit) {
+
     Surface {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -96,7 +90,7 @@ private fun OnboardingScreen(onContinueClicked: () -> Unit) {
 }
 
 @Composable
-private fun Greetings(names: List<String> = List(1000) { "$it" } ) {
+private fun Greetings(names: List<String> = List(1000) { "$it" }) {
     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
             Greeting(name = name)
@@ -106,58 +100,68 @@ private fun Greetings(names: List<String> = List(1000) { "$it" } ) {
 
 @Composable
 private fun Greeting(name: String) {
-    Card(
-        backgroundColor = MaterialTheme.colors.primary,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-    ) {
-        CardContent(name)
-    }
-}
 
-@Composable
-private fun CardContent(name: String) {
     var expanded by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = Modifier
-            .padding(12.dp)
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+//    val extraPadding by animateDpAsState(
+//        if (expanded) 48.dp else 0.dp,
+//        animationSpec = spring(
+//            dampingRatio = Spring.DampingRatioMediumBouncy,
+//            stiffness = Spring.StiffnessLow
+//        )
+//    )
+
+    Surface(
+        color = MaterialTheme.colors.primary,
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .weight(1f)
                 .padding(12.dp)
-        ) {
-            Text(text = "Hello, ")
-            Text(
-                text = name,
-                style = MaterialTheme.typography.h4.copy(
-                    fontWeight = FontWeight.ExtraBold
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
                 )
-            )
-            if (expanded) {
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp)
+            ) {
+                Text(text = "Hello, ")
                 Text(
-                    text = ("Composem ipsum color sit lazy, " +
-                        "padding theme elit, sed do bouncy. ").repeat(4),
+                    text = name,
+                    style = MaterialTheme.typography.h4.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                )
+                if (expanded) {
+                    Text(
+                        text = ("Composem ipsum color sit lazy, " +
+                                "padding theme elit, sed do bouncy. ").repeat(4),
+                    )
+                }
+            }
+//            OutlinedButton(
+//                onClick = { expanded = !expanded }
+//            ) {
+//                Text(if (expanded) "Show less" else "Show more")
+//            }
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    imageVector = if (expanded) Filled.ExpandLess else Filled.ExpandMore,
+                    contentDescription = if (expanded) {
+                        stringResource(R.string.show_less)
+                    } else {
+                        stringResource(R.string.show_more)
+                    }
+
                 )
             }
         }
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = if (expanded) Filled.ExpandLess else Filled.ExpandMore,
-                contentDescription = if (expanded) {
-                    stringResource(R.string.show_less)
-                } else {
-                    stringResource(R.string.show_more)
-                }
 
-            )
-        }
     }
 }
 
